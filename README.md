@@ -2,7 +2,7 @@
 
 # Abejorro Digital Color
 
-### *Ingeniería de Color y Extracción Cromática para Sistemas de Diseño Modernos*
+### Ingeniería de Color y Extracción Cromática para Sistemas de Diseño Modernos
 
 **Abejorro Digital Color** es una solución avanzada de software diseñada para transformar recursos visuales en activos técnicos accionables. Esta aplicación permite la extracción automatizada de paletas cromáticas a partir de imágenes, integrando algoritmos de visión computacional y manipulación en espacios de color perceptualmente uniformes para garantizar la coherencia visual en flujos de trabajo de ingeniería frontend.
 
