@@ -70,6 +70,7 @@ interface ColorCardProps {
   onSelect: (c: string) => void;
   isSelected: boolean;
   onCopy: (c: string) => void;
+  format: 'HEX' | 'RGB' | 'HSL';
   key?: React.Key;
 }
 
@@ -78,8 +79,12 @@ const ColorCard = ({
   index, 
   onSelect, 
   isSelected,
-  onCopy 
+  onCopy,
+  format
 }: ColorCardProps) => {
+  const formats = getColorFormats(color);
+  const displayValue = format === 'HEX' ? formats.hex : format === 'RGB' ? formats.rgb : formats.hsl;
+
   return (
     <motion.div
       layout
@@ -97,7 +102,7 @@ const ColorCard = ({
         style={{ backgroundColor: color }}
       >
         <button 
-          onClick={(e) => { e.stopPropagation(); onCopy(color); }}
+          onClick={(e) => { e.stopPropagation(); onCopy(displayValue); }}
           className="p-2 bg-white/20 backdrop-blur-md rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/40"
         >
           <Copy size={16} className="text-white" />
@@ -105,7 +110,7 @@ const ColorCard = ({
       </div>
       <div className="flex flex-col">
         <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Color {index + 1}</span>
-        <span className="text-sm font-mono font-bold text-zinc-800">{color.toUpperCase()}</span>
+        <span className="text-[10px] font-mono font-bold text-zinc-800 truncate" title={displayValue}>{displayValue.toUpperCase()}</span>
       </div>
     </motion.div>
   );
@@ -117,6 +122,7 @@ export default function App() {
   const [selectedColor, setSelectedColor] = useState<string>(palette[0]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '' });
+  const [colorFormat, setColorFormat] = useState<'HEX' | 'RGB' | 'HSL'>('HEX');
   
   // Adjustments
   const [brightness, setBrightness] = useState(0);
@@ -425,6 +431,7 @@ export default function App() {
                   onSelect={setSelectedColor}
                   isSelected={selectedColor === color}
                   onCopy={handleCopy}
+                  format={colorFormat}
                 />
               ))}
             </div>
@@ -438,9 +445,16 @@ export default function App() {
                 Refinamiento Cromático
               </h2>
               <div className="flex gap-2">
-                {['HEX', 'RGB', 'HSL'].map(format => (
-                  <button key={format} className="px-3 py-1 text-[10px] font-black bg-zinc-50 rounded-md text-zinc-400 hover:text-zinc-900 transition-colors">
-                    {format}
+                {(['HEX', 'RGB', 'HSL'] as const).map(f => (
+                  <button 
+                    key={f} 
+                    onClick={() => setColorFormat(f)}
+                    className={cn(
+                      "px-3 py-1 text-[10px] font-black rounded-md transition-all",
+                      colorFormat === f ? "bg-zinc-900 text-white shadow-md" : "bg-zinc-50 text-zinc-400 hover:text-zinc-900"
+                    )}
+                  >
+                    {f}
                   </button>
                 ))}
               </div>
@@ -498,7 +512,11 @@ export default function App() {
                     style={{ backgroundColor: adjustedColor }}
                   />
                   <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-xl shadow-lg border border-zinc-100">
-                    <span className="text-sm font-mono font-bold">{adjustedColor.toUpperCase()}</span>
+                    <span className="text-[10px] font-mono font-bold">
+                      {colorFormat === 'HEX' ? getColorFormats(adjustedColor).hex.toUpperCase() : 
+                       colorFormat === 'RGB' ? getColorFormats(adjustedColor).rgb.toUpperCase() : 
+                       getColorFormats(adjustedColor).hsl.toUpperCase()}
+                    </span>
                   </div>
                 </div>
                 <button 
